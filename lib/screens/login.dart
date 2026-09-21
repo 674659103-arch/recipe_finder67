@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'home.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -23,31 +22,164 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _handleLogin() {
     if (_formKey.currentState?.validate() ?? true) {
+      final emailText = _emailController.text.trim();
+      final user = emailText.isNotEmpty ? emailText : 'User';
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('เข้าสู่ระบบสำเร็จ กำลังนำคุณไปยังหน้าหลัก...'),
-          backgroundColor: Color(0xFF157128),
-          duration: Duration(seconds: 1),
+        SnackBar(
+          content: Text('เข้าสู่ระบบสำเร็จ ยินดีต้อนรับ $user'),
+          backgroundColor: const Color(0xFF157128),
+          duration: const Duration(seconds: 1),
         ),
       );
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
-      );
+      Navigator.pushReplacementNamed(context, '/home');
     }
   }
 
   void _handleGoogleLogin() {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('ดำเนินการด้วย Google สำเร็จ กำลังนำคุณไปยังหน้าหลัก...'),
+        content: Text('เข้าสู่ระบบด้วย Google สำเร็จ'),
         backgroundColor: Color(0xFF4285F4),
         duration: Duration(seconds: 1),
       ),
     );
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const HomeScreen()),
+    Navigator.pushReplacementNamed(context, '/home');
+  }
+
+  void _showRegisterDialog() {
+    final regEmailController = TextEditingController();
+    final regPassController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          title: const Text(
+            'สมัครสมาชิก (Register)',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF157128),
+            ),
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: regEmailController,
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: InputDecoration(
+                    labelText: 'Email',
+                    hintText: 'กรอกอีเมลของคุณ',
+                    prefixIcon: const Icon(Icons.email_outlined, color: Color(0xFF157128)),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: regPassController,
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    labelText: 'Password',
+                    hintText: 'ตั้งรหัสผ่าน',
+                    prefixIcon: const Icon(Icons.lock_outline, color: Color(0xFF157128)),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('ยกเลิก', style: TextStyle(color: Colors.grey)),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('สมัครสมาชิกสำเร็จ! เข้าสู่ระบบให้อัตโนมัติ...'),
+                    backgroundColor: Color(0xFF157128),
+                    duration: Duration(seconds: 1),
+                  ),
+                );
+                Navigator.pushReplacementNamed(context, '/home');
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF157128),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              ),
+              child: const Text('สมัครสมาชิก', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showForgotPasswordDialog() {
+    final resetEmailController = TextEditingController(text: _emailController.text);
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          title: const Text(
+            'ลืมรหัสผ่าน (Forgot Password)',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF157128),
+            ),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'กรุณากรอกอีเมลของคุณ ระบบจะส่งลิงก์สำหรับตั้งรหัสผ่านใหม่ไปให้',
+                style: TextStyle(fontSize: 13, color: Colors.black87),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: resetEmailController,
+                keyboardType: TextInputType.emailAddress,
+                decoration: InputDecoration(
+                  labelText: 'Email',
+                  hintText: 'กรอกอีเมลของคุณ',
+                  prefixIcon: const Icon(Icons.email_outlined, color: Color(0xFF157128)),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('ยกเลิก', style: TextStyle(color: Colors.grey)),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('ส่งลิงก์รีเซ็ตรหัสผ่านไปยัง ${resetEmailController.text.isNotEmpty ? resetEmailController.text : "อีเมลของคุณ"} เรียบร้อยแล้ว'),
+                    backgroundColor: const Color(0xFF157128),
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF157128),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              ),
+              child: const Text('ส่งข้อมูล', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -236,11 +368,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 // Register Link
                 GestureDetector(
-                  onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('ไปที่หน้าสมัครสมาชิก (Register)')),
-                    );
-                  },
+                  onTap: _showRegisterDialog,
                   child: RichText(
                     text: TextSpan(
                       text: 'ยังไม่มีบัญชี? ',
@@ -264,11 +392,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 // Forgot Password Link
                 TextButton(
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('ไปที่หน้าลืมรหัสผ่าน (Forgot Password)')),
-                    );
-                  },
+                  onPressed: _showForgotPasswordDialog,
                   child: Text(
                     'ลืมรหัสผ่าน (Forgot Password)?',
                     style: TextStyle(

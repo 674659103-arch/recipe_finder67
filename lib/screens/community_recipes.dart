@@ -8,7 +8,7 @@ class CommunityRecipesScreen extends StatefulWidget {
 }
 
 class _CommunityRecipesScreenState extends State<CommunityRecipesScreen> {
-  int _currentIndex = 1; // Search/Community tab
+  int _currentIndex = 2; // Community tab
 
   final List<CommunityPost> _posts = [
     CommunityPost(
@@ -124,21 +124,53 @@ class _CommunityRecipesScreenState extends State<CommunityRecipesScreen> {
         'ราดเมเปิลไซรัปฉ่ำๆ พร้อมรับประทาน',
       ],
     ),
+    CommunityPost(
+      authorName: 'Chef Somchai',
+      timeAgo: '3 วันที่แล้ว',
+      recipeTitle: 'ต้มยำกุ้งน้ำข้น',
+      description: 'ต้มยำกุ้งน้ำข้นรสจัดจ้าน เครื่องต้มยำแน่นๆ กุ้งตัวโตฉ่ำๆ',
+      imageUrl: 'https://images.unsplash.com/photo-1548946526-f69e2424cf45?w=500&q=80',
+      likes: 210,
+      comments: 42,
+      isLiked: true,
+      isBookmarked: true,
+      prepTime: '15 นาที',
+      cookTime: '15 นาที',
+      difficulty: 'ปานกลาง',
+      ingredients: [
+        'กุ้งแม่น้ำ 5 ตัว',
+        'ข่า ตะไคร้ ใบมะกรูด พริกสด',
+        'เห็ดฟาง 100 กรัม',
+        'น้ำพริกเผา 2 ช้อนโต๊ะ',
+        'นมข้นจืด 4 ช้อนโต๊ะ',
+        'น้ำมะนาวสด',
+      ],
+      steps: [
+        'ต้มน้ำซุปข่า ตะไคร้ ใบมะกรูด พริกสดให้หอมตลบอบอวล',
+        'ใส่น้ำพริกเผา เห็ดฟาง และกุ้งลงไปต้มพอสุก',
+        'ใส่นมข้นจืด ยกลงปรุงรสด้วยมะนาวและน้ำปลาพร้อมเสิร์ฟ',
+      ],
+    ),
   ];
 
   void _onBottomNavTapped(int index) {
     if (index == _currentIndex) return;
 
-    if (index == 0) {
-      Navigator.pushReplacementNamed(context, '/home');
-    } else if (index == 2) {
-      Navigator.pushReplacementNamed(context, '/favorites');
-    } else if (index == 3) {
-      Navigator.pushReplacementNamed(context, '/meal_planner');
-    } else {
-      setState(() {
-        _currentIndex = index;
-      });
+    switch (index) {
+      case 0:
+        Navigator.pushReplacementNamed(context, '/home');
+        break;
+      case 1:
+        Navigator.pushReplacementNamed(context, '/categories');
+        break;
+      case 2:
+        break;
+      case 3:
+        Navigator.pushReplacementNamed(context, '/favorites');
+        break;
+      case 4:
+        Navigator.pushReplacementNamed(context, '/meal_planner');
+        break;
     }
   }
 
@@ -355,8 +387,12 @@ class _CommunityRecipesScreenState extends State<CommunityRecipesScreen> {
               label: 'หน้าหลัก',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.search_rounded),
-              label: 'ค้นหา/ชุมชน',
+              icon: Icon(Icons.grid_view_rounded),
+              label: 'หมวดหมู่',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.people_alt_rounded),
+              label: 'ชุมชน',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.favorite_border_rounded),
@@ -364,7 +400,7 @@ class _CommunityRecipesScreenState extends State<CommunityRecipesScreen> {
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.calendar_today_rounded),
-              label: 'วางแผนมื้ออาหาร',
+              label: 'วางแผน',
             ),
           ],
         ),
@@ -471,15 +507,51 @@ class _CommunityRecipesScreenState extends State<CommunityRecipesScreen> {
               borderRadius: BorderRadius.circular(12),
               child: SizedBox(
                 width: double.infinity,
-                height: 150,
+                height: 160,
                 child: Image.network(
                   post.imageUrl,
                   fit: BoxFit.cover,
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return Container(
+                      color: const Color(0xFFF1F8E9),
+                      child: const Center(
+                        child: CircularProgressIndicator(
+                          color: Color(0xFF157128),
+                          strokeWidth: 2,
+                        ),
+                      ),
+                    );
+                  },
                   errorBuilder: (context, error, stackTrace) {
                     return Container(
-                      color: const Color(0xFFFFF3E0),
-                      child: const Center(
-                        child: Icon(Icons.restaurant_rounded, size: 48, color: Colors.orange),
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [Color(0xFFE8F5E9), Color(0xFFC8E6C9)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                      ),
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              Icons.restaurant_menu_rounded,
+                              size: 40,
+                              color: Color(0xFF157128),
+                            ),
+                            const SizedBox(height: 6),
+                            Text(
+                              post.recipeTitle,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF157128),
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     );
                   },
